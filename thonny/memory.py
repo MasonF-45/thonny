@@ -90,11 +90,11 @@ class VariablesFrame(MemoryFrame):
 
     def _update_memory_model(self, event=None):
         if get_workbench().in_heap_mode():
-            self.tree.configure(displaycolumns=("name", "id"))
+            self.tree.configure(displaycolumns=("name", "id", "type"))
             # self.tree.columnconfigure(1, weight=1, width=400)
             # self.tree.columnconfigure(2, weight=0)
         else:
-            self.tree.configure(displaycolumns=("name", "value"))
+            self.tree.configure(displaycolumns=("name", "value", "type"))
             # self.tree.columnconfigure(1, weight=0)
             # self.tree.columnconfigure(2, weight=1, width=400)
 
