@@ -135,7 +135,7 @@ class VariablesFrame(MemoryFrame):
 
     def _infer_type(self, text):
         """Infer type from repr string"""
-        if not isinstance(text,str)
+        if not isinstance(text,str):
             return type(text).__name__
 
         t = text.strip()
