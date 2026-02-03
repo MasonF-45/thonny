@@ -120,7 +120,7 @@ class VariablesFrame(MemoryFrame):
                 if isinstance(variables[name], ValueInfo):
                     description = variables[name].repr
                     id_str = variables[name].id
-                    type_name = variables[name].type
+                    type_name = variables[name].type_name
 
                 else:
                     description = variables[name]
