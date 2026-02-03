@@ -61,16 +61,18 @@ class MemoryFrame(TreeFrame):
 class VariablesFrame(MemoryFrame):
     def __init__(self, master, consider_heading_stripe=True):
         MemoryFrame.__init__(
-            self, master, ("name", "id", "value"), consider_heading_stripe=consider_heading_stripe
+            self, master, ("name", "id", "type", "value"), consider_heading_stripe=consider_heading_stripe
         )
 
         self.tree.column("name", width=120, anchor=tk.W, stretch=False)
         self.tree.column("id", width=450, anchor=tk.W, stretch=True)
         self.tree.column("value", width=450, anchor=tk.W, stretch=True)
+        self.tree.column("type", width=120, anchor=tk.W, stretch=False)
 
         self.tree.heading("name", text=tr("Name"), anchor=tk.W)
         self.tree.heading("id", text=tr("Value ID"), anchor=tk.W)
         self.tree.heading("value", text=tr("Value"), anchor=tk.W)
+        self.tree.heading("type", text=tr("Type"), anchor=tk.W)
 
         get_workbench().bind("ShowView", self._update_memory_model, True)
         get_workbench().bind("HideView", self._update_memory_model, True)
@@ -118,12 +120,18 @@ class VariablesFrame(MemoryFrame):
                 if isinstance(variables[name], ValueInfo):
                     description = variables[name].repr
                     id_str = variables[name].id
+                    py_value = variables[name].value
+                    type_name = type(py_value).__name__
+
                 else:
                     description = variables[name]
                     id_str = None
+                    type_name = type(variables[name]).__name__
 
+                
                 self.tree.set(node_id, "id", format_object_id(id_str))
                 self.tree.set(node_id, "value", description)
+                self.tree.set(node_id, "type", type_name)
 
     def on_select(self, event):
         self.show_selected_object_info()
