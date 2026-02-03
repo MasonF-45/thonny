@@ -126,7 +126,7 @@ class VariablesFrame(MemoryFrame):
                 else:
                     description = variables[name]
                     id_str = None
-                    type_name = type(variables[name]).__name__
+                    type_name = type(variables[name]).type
 
                 
                 self.tree.set(node_id, "id", format_object_id(id_str))
