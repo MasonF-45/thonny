@@ -586,10 +586,10 @@ class Runner:
             and self.cmd_run_current_script_enabled()
         )
 
-    def cmd_run_current_script(self) -> None:
+    def _cmd_run_current_script(self) -> None:
         if get_workbench().in_simple_mode():
             get_workbench().hide_view("VariablesView")
-        report_time("Before Run")
+        report_time("def cmd_runBefore Run")
         if self._proxy and self._proxy.should_restart_interpreter_before_run():
             self.execute_current("Run")
         else:
