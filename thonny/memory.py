@@ -120,13 +120,12 @@ class VariablesFrame(MemoryFrame):
                 if isinstance(variables[name], ValueInfo):
                     description = variables[name].repr
                     id_str = variables[name].id
-                    py_value = variables[name].value
-                    type_name = type(py_value).__name__
+                    type_name = variables[name].type
 
                 else:
                     description = variables[name]
                     id_str = None
-                    type_name = type(variables[name]).type
+                    type_name = type(variables[name]).__name__
 
                 
                 self.tree.set(node_id, "id", format_object_id(id_str))
