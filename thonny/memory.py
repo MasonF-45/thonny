@@ -125,12 +125,38 @@ class VariablesFrame(MemoryFrame):
                 else:
                     description = variables[name]
                     id_str = None
-                    type_name = type(variables[name]).__name__
+                #Infer type from repr
+                type_name = self._infer_type(description)
 
                 
                 self.tree.set(node_id, "id", format_object_id(id_str))
                 self.tree.set(node_id, "value", description)
                 self.tree.set(node_id, "type", type_name)
+
+    def _infer_type(self, text):
+        """Infer type from repr string"""
+        if not isinstance(text,str)
+            return type(text).__name__
+
+        t = text.strip()
+
+        if t.startswith('<') and "object at" in t:
+            return t.split()[0].lstrip('<')
+        if t.startswith('['):
+            return "list"
+        if t.startswith('{'):
+            return "dict"
+        if t.startswith('('):
+            return "tuple"
+        if t.startswith("'") or t.startswith('"'):
+            return "str"
+        if t.isdigit or (t.startswith('-') and t[1:].isdigit()):
+            return "int"
+        try:
+            float(t)
+            return "float"
+        except:
+            return "unknown"
 
     def on_select(self, event):
         self.show_selected_object_info()
