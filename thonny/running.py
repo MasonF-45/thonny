@@ -590,19 +590,24 @@ class Runner:
         if get_workbench().in_simple_mode():
             get_workbench().hide_view("VariablesView")
             # --- BEGIN LOGGING HOOK ---
+        import os, time
+
+            # Path to your source tree's thonny/ directory
+        source_root = os.path.dirname(os.path.dirname(__file__))  # goes from running.py → thonny → project root
+        logs_dir = os.path.join(source_root, "thonny", "logs")
+        os.makedirs(logs_dir, exist_ok=True)
+
         editor = get_workbench().get_editor_notebook().get_current_editor()
         if editor:
             cv = editor.get_code_view()
             source = cv.text.get("1.0", "end-1c")
-            logs_dir = os.path.join(thonny.get_thonny_user_dir(), "logs")
-            os.makedirs(logs_dir, exist_ok=True)
 
             timestamp = time.strftime("%Y%m%d_%H%M%S")
             filename = f"run_{timestamp}.py"
             filepath = os.path.join(logs_dir, filename)
 
-            with open(filepath, "w", encoding="utf-8") as f:
-                f.write(source)
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(source)
         # --- END LOGGING HOOK ---
 
 
