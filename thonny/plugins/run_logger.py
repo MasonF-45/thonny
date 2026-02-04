@@ -2,10 +2,8 @@ import os
 import time
 from thonny import get_workbench
 
-def log_current_program(event):
-    # Only act on the "run" command
-    if event.command_name != "run":
-        return
+def log_current_program(event=None):
+    print("RUN EVENT FIRED")  # debug
 
     editor = get_workbench().get_editor_notebook().get_current_editor()
     if editor is None:
@@ -27,5 +25,4 @@ def log_current_program(event):
 
 def load_plugin():
     print("RUN LOGGER LOADED")
-    # Bind to all commands, filter inside handler
-    get_workbench().bind("Command", log_current_program, True)
+    get_workbench().bind("BeforeRun", log_current_program, True)
