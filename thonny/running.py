@@ -592,7 +592,8 @@ class Runner:
             # --- BEGIN LOGGING HOOK ---
         editor = get_workbench().get_editor_notebook().get_current_editor()
         if editor:
-            source = editor.get_code_view().get_text()
+            cv = editor.get_code_view()
+            source = cv.text.get("1.0", "end-1c")
             logs_dir = os.path.join(thonny.get_thonny_user_dir(), "logs")
             os.makedirs(logs_dir, exist_ok=True)
 
