@@ -3,6 +3,7 @@ import time
 from thonny import get_workbench
 
 def log_current_program(event=None):
+    print("RUN EVENT FIRED")  # debug
     editor = get_workbench().get_editor_notebook().get_current_editor()
     if editor is None:
         return
@@ -20,4 +21,5 @@ def log_current_program(event=None):
         f.write(source)
 
 def load_plugin():
+    print("RUN LOGGER LOADED")  # debug
     get_workbench().bind("Run", log_current_program, True)
