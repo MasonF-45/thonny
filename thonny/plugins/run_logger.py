@@ -22,4 +22,4 @@ def log_current_program(event=None):
 
 def load_plugin():
     print("RUN LOGGER LOADED")  # debug
-    get_workbench().bind("Run", log_current_program, True)
+    get_workbench().bind("run", log_current_program, True)
