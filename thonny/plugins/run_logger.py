@@ -1,13 +1,17 @@
-import os
-import time
-from thonny import get_workbench
-
 def log_current_program():
     editor = get_workbench().get_editor_notebook().get_current_editor()
     if editor is None:
+        print("No editor found")
         return
 
-    source = editor.get_code_view().get_text()
+    cv = editor.get_code_view()
+
+    # The correct way to get text in your Thonny build
+    try:
+        source = cv.text.get("1.0", "end-1c")
+    except Exception as e:
+        print("Failed to read editor text:", e)
+        return
 
     logs_dir = os.path.join(get_workbench().get_thonny_user_dir(), "logs")
     os.makedirs(logs_dir, exist_ok=True)
@@ -20,27 +24,3 @@ def log_current_program():
         f.write(source)
 
     print("LOGGED PROGRAM TO:", filepath)
-
-def patch_run_button(event=None):
-    wb = get_workbench()
-    tb = wb.get_toolbar()
-
-    # The Run button label you identified
-    run_label = tb.nametowidget(".!frame.!frame.!frame2.!customtoolbutton.!label")
-
-    # Get existing click binding
-    original = run_label.bind("<Button-1>")
-
-    def wrapped(event):
-        log_current_program()
-        if original:
-            return original(event)
-
-    run_label.bind("<Button-1>", wrapped)
-
-    print("RUN LOGGER PATCHED RUN LABEL SUCCESSFULLY")
-
-def load_plugin():
-    print("RUN LOGGER LOADED")
-    get_workbench().bind("WorkbenchReady", patch_run_button, True)
-
