@@ -193,7 +193,7 @@ class Runner:
             "run",
             RUN_COMMAND_LABEL,
             caption=RUN_COMMAND_CAPTION,
-            handler=self.cmd_run_current_script,
+            handler=self._cmd_run_current_script,
             default_sequence="<F5>",
             extra_sequences=[select_sequence("<Control-r>", "<Command-r>")],
             tester=self.cmd_run_current_script_enabled,
