@@ -21,18 +21,20 @@ def log_current_program():
 
     print("LOGGED PROGRAM TO:", filepath)
 
-def load_plugin():
-    print("RUN LOGGER LOADED")
-
+def patch_run_command(event=None):
     wb = get_workbench()
 
-    # Save original run function
+    # Now Workbench is fully initialized
     original_run = wb._cmd_run_current_script
 
-    # Define wrapper
     def wrapped_run():
         log_current_program()
         return original_run()
 
-    # Replace Thonny's run command with our wrapped version
     wb._cmd_run_current_script = wrapped_run
+    print("RUN LOGGER PATCHED SUCCESSFULLY")
+
+def load_plugin():
+    print("RUN LOGGER LOADED")
+    # Wait until Workbench is fully ready
+    get_workbench().bind("WorkbenchReady", patch_run_command, True)
