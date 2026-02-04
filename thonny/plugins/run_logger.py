@@ -25,23 +25,22 @@ def patch_run_button(event=None):
     wb = get_workbench()
     tb = wb.get_toolbar()
 
-    # This is the Run button you identified
-    run_button = tb.nametowidget(".!frame.!frame.!frame2.!customtoolbutton")
+    # The Run button label you identified
+    run_label = tb.nametowidget(".!frame.!frame.!frame2.!customtoolbutton.!label")
 
-    # Get the existing click binding
-    original = run_button.bind("<Button-1>")
+    # Get existing click binding
+    original = run_label.bind("<Button-1>")
 
     def wrapped(event):
         log_current_program()
-        # Call original binding if it exists
         if original:
             return original(event)
 
-    # Replace the click handler
-    run_button.bind("<Button-1>", wrapped)
+    run_label.bind("<Button-1>", wrapped)
 
-    print("RUN LOGGER PATCHED RUN BUTTON SUCCESSFULLY")
+    print("RUN LOGGER PATCHED RUN LABEL SUCCESSFULLY")
 
 def load_plugin():
     print("RUN LOGGER LOADED")
     get_workbench().bind("WorkbenchReady", patch_run_button, True)
+
