@@ -2,8 +2,11 @@ import os
 import time
 from thonny import get_workbench
 
-def log_current_program(event=None):
-    print("RUN EVENT FIRED")  # debug
+def log_current_program(event):
+    # Only act on the "run" command
+    if event.command_name != "run":
+        return
+
     editor = get_workbench().get_editor_notebook().get_current_editor()
     if editor is None:
         return
@@ -20,6 +23,9 @@ def log_current_program(event=None):
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(source)
 
+    print("LOGGED PROGRAM TO:", filepath)
+
 def load_plugin():
-    print("RUN LOGGER LOADED")  # debug
-    get_workbench().bind("run", log_current_program, True)
+    print("RUN LOGGER LOADED")
+    # Bind to all commands, filter inside handler
+    get_workbench().bind("Command", log_current_program, True)
