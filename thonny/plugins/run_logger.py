@@ -1,68 +1,71 @@
-# thonny_log_runs.py
+# run_logger.py
 import os
 import datetime
-from thonny import get_workbench, get_thonny_user_dir
+from thonny import get_workbench, get_runner, get_thonny_user_dir
 
 
-def _ensure_logs_dir() -> str:
-    logs_dir = os.path.join(get_thonny_user_dir(), "logs")
-    os.makedirs(logs_dir, exist_ok=True)
-    return logs_dir
+def _ensure_logs_dir():
+    logs = os.path.join(get_thonny_user_dir(), "logs")
+    os.makedirs(logs, exist_ok=True)
+    return logs
 
 
-def _get_current_source():
+def _get_editor_source():
     wb = get_workbench()
     editor = wb.get_editor_notebook().get_current_editor()
-    if editor is None:
+    if not editor:
         return None, None
 
-    # Try to get a reasonable base name for the file
-    filename = editor.get_filename() or "untitled.py"
-    base = os.path.basename(filename)
+    # filename for naming the log file
+    name = editor.get_filename() or "untitled.py"
+    base = os.path.basename(name)
 
-    # Editor exposes its code via the code view
+    # safest way to get code across Thonny versions
     try:
         source = editor.get_code_view().get_content()
     except Exception:
-        # Fallback if API changes
         text = editor.get_text_widget()
         source = text.get("1.0", "end-1c")
 
     return base, source
 
 
-def _log_current_program(event):
-    # Only react to successful Run commands
-    if getattr(event, "denied", False):
+def _patched_run(original_run_method):
+    def wrapper(*args, **kwargs):
+        # Log BEFORE running
+        base, source = _get_editor_source()
+        if source:
+            logs = _ensure_logs_dir()
+            ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+            path = os.path.join(logs, f"{ts}_{base}")
+            try:
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write(source)
+            except Exception:
+                pass  # never break Run
+
+        # Call the real run method
+        return original_run_method(*args, **kwargs)
+
+    return wrapper
+
+
+def _install_patch(event=None):
+    runner = get_runner()
+    if not runner:
         return
 
-    # Main run commands in Thonny
-    if event.command_id not in (
-        "run_current_script",
-        "run_current_script_in_terminal",
-        "run_current_script_custom",
-    ):
+    # Patch only once
+    if hasattr(runner, "_run_logger_patched"):
         return
 
-    base, source = _get_current_source()
-    if source is None:
-        return
-
-    logs_dir = _ensure_logs_dir()
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    log_name = f"{timestamp}_{base}"
-    log_path = os.path.join(logs_dir, log_name)
-
-    try:
-        with open(log_path, "w", encoding="utf-8") as f:
-            f.write(source)
-    except Exception:
-        # Don't break the run if logging fails
-        pass
+    original = runner._cmd_run_current_script
+    runner._cmd_run_current_script = _patched_run(original)
+    runner._run_logger_patched = True
 
 
 def load_plugin():
-    wb = get_workbench()
-    # Listen for all UI commands; filter to Run in handler
-    wb.bind("UICommandDispatched", _log_current_program, True)
+    # Install patch AFTER Thonny is fully initialized
+    get_workbench().bind("WorkbenchReady", _install_patch, True)
+
 
