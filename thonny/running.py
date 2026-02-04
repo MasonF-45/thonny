@@ -601,7 +601,7 @@ class Runner:
             filepath = os.path.join(logs_dir, filename)
 
             with open(filepath, "w", encoding="utf-8") as f:
-            f.write(source)
+                f.write(source)
         # --- END LOGGING HOOK ---
 
 
