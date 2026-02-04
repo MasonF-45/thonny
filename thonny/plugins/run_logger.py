@@ -2,9 +2,7 @@ import os
 import time
 from thonny import get_workbench
 
-def log_current_program(event=None):
-    print("RUN EVENT FIRED")  # debug
-
+def log_current_program():
     editor = get_workbench().get_editor_notebook().get_current_editor()
     if editor is None:
         return
@@ -25,4 +23,16 @@ def log_current_program(event=None):
 
 def load_plugin():
     print("RUN LOGGER LOADED")
-    get_workbench().bind("BeforeRun", log_current_program, True)
+
+    wb = get_workbench()
+
+    # Save original run function
+    original_run = wb._cmd_run_current_script
+
+    # Define wrapper
+    def wrapped_run():
+        log_current_program()
+        return original_run()
+
+    # Replace Thonny's run command with our wrapped version
+    wb._cmd_run_current_script = wrapped_run
