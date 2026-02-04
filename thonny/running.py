@@ -589,6 +589,22 @@ class Runner:
     def _cmd_run_current_script(self) -> None:
         if get_workbench().in_simple_mode():
             get_workbench().hide_view("VariablesView")
+            # --- BEGIN LOGGING HOOK ---
+        editor = get_workbench().get_editor_notebook().get_current_editor()
+        if editor:
+            source = editor.get_code_view().get_text()
+            logs_dir = os.path.join(thonny.get_thonny_user_dir(), "logs")
+            os.makedirs(logs_dir, exist_ok=True)
+
+            timestamp = time.strftime("%Y%m%d_%H%M%S")
+            filename = f"run_{timestamp}.py"
+            filepath = os.path.join(logs_dir, filename)
+
+            with open(filepath, "w", encoding="utf-8") as f:
+            f.write(source)
+        # --- END LOGGING HOOK ---
+
+
         report_time("def cmd_runBefore Run")
         if self._proxy and self._proxy.should_restart_interpreter_before_run():
             self.execute_current("Run")
